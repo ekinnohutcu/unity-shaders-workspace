@@ -4,6 +4,8 @@ Shader "Custom/DistortionFlow" {
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
+		[NoScaleOffset] _FlowMap ("Flow (RG, A noise)", 2D) = "black" {}
+		
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
@@ -13,7 +15,9 @@ Shader "Custom/DistortionFlow" {
 		#pragma surface surf Standard fullforwardshadows
 		#pragma target 3.0
 
-		sampler2D _MainTex;
+
+		#include "Flow.cginc"
+		sampler2D _MainTex, _FlowMap;
 
 		struct Input {
 			float2 uv_MainTex;
@@ -24,7 +28,14 @@ Shader "Custom/DistortionFlow" {
 		fixed4 _Color;
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
-			fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
+			float2 flowVector = tex2D(_FlowMap, IN.uv_MainTex).rg * 2 - 1;
+			float noise = tex2D(_FlowMap, IN.uv_MainTex).a;
+			float time = _Time.y + noise;
+			float3 uvw = FlowUVW(IN.uv_MainTex, flowVector, time);
+			
+			fixed4 c = tex2D(_MainTex, uvw.xy) * uvw.z * _Color;
+
+			
 			o.Albedo = c.rgb;
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
