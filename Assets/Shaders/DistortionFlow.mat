@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FlowMap:
-        m_Texture: {fileID: 2800000, guid: 31e5a5a14d3c2437698d36f7a11d7d21, type: 3}
+        m_Texture: {fileID: 2800000, guid: f3214b704dedc4bee9de64bbc297fa18, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
